@@ -2,6 +2,8 @@
 
 A modern, clean web application that converts YouTube videos to high-quality MP3 files using yt-dlp and ffmpeg.
 
+![screenshot](https://github.com/fabriziosalmi/tubeconv/blob/main/screenshot_1.png?raw=true)
+
 ## Features
 
 - **Modern UI/UX**: Clean, responsive design with dark theme
