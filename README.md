@@ -32,7 +32,20 @@
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### 🐳 Option 1: Docker (Recommended)
+
+The fastest way to get started:
+
+```bash
+# Run with Docker (no dependencies needed!)
+docker run -d --name tubeconv -p 3000:3000 fabriziosalmi/tubeconv:latest
+
+# Open http://localhost:3000 and start converting! 🎉
+```
+
+### 💻 Option 2: Local Installation
+
+#### Prerequisites
 
 Ensure you have these installed:
 
@@ -42,7 +55,7 @@ Ensure you have these installed:
 | **yt-dlp** | Latest | `pip install yt-dlp` or `brew install yt-dlp` |
 | **ffmpeg** | Latest | `brew install ffmpeg` or [Download](https://ffmpeg.org/) |
 
-### Installation
+#### Installation
 
 ```bash
 # Clone the repository
@@ -148,7 +161,6 @@ docker run -d \
 | Tag | Description | Size |
 |-----|-------------|------|
 | `fabriziosalmi/tubeconv:latest` | Latest stable release | ~150MB |
-| `fabriziosalmi/tubeconv:v1.0.0` | Specific version | ~150MB |
 
 ### 🔧 Docker Compose (Recommended)
 
@@ -435,6 +447,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 [![GitHub Stars](https://img.shields.io/github/stars/fabriziosalmi/tubeconv?style=social)](https://github.com/fabriziosalmi/tubeconv/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/fabriziosalmi/tubeconv?style=social)](https://github.com/fabriziosalmi/tubeconv/network/members)
+[![Docker Pulls](https://img.shields.io/docker/pulls/fabriziosalmi/tubeconv)](https://hub.docker.com/r/fabriziosalmi/tubeconv)
 [![GitHub Issues](https://img.shields.io/github/issues/fabriziosalmi/tubeconv)](https://github.com/fabriziosalmi/tubeconv/issues)
 [![License](https://img.shields.io/github/license/fabriziosalmi/tubeconv)](https://github.com/fabriziosalmi/tubeconv/blob/main/LICENSE)
 
