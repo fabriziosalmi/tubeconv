@@ -40,7 +40,8 @@ class TubeConvApp {
         this.resultSection = document.getElementById('resultSection');
         this.errorSection = document.getElementById('errorSection');
         
-        // Preview elements
+        // Preview elements - DEPRECATED: Direct conversion enabled
+        /*
         this.previewThumbnail = document.getElementById('previewThumbnail');
         this.previewTitle = document.getElementById('previewTitle');
         this.previewDuration = document.getElementById('previewDuration');
@@ -49,6 +50,7 @@ class TubeConvApp {
         this.customTitle = document.getElementById('customTitle');
         this.customArtist = document.getElementById('customArtist');
         this.confirmConversion = document.getElementById('confirmConversion');
+        */
         
         // Loading elements
         this.loadingSteps = {
@@ -91,10 +93,12 @@ class TubeConvApp {
             radio.addEventListener('change', () => this.saveSettings());
         });
         
-        // Preview confirmation
+        // Preview confirmation - DEPRECATED: Now skipping preview step
+        /*
         if (this.confirmConversion) {
             this.confirmConversion.addEventListener('click', () => this.startConversion());
         }
+        */
         
         // Result actions
         if (this.downloadBtn) {
@@ -141,7 +145,9 @@ class TubeConvApp {
         const url = this.urlInput.value.trim();
         const isValid = this.isValidYouTubeUrl(url);
         
-        this.convertBtn.disabled = !isValid;
+        if (this.convertBtn) {
+            this.convertBtn.disabled = !isValid;
+        }
         
         if (url.length > 0) {
             if (isValid) {
@@ -171,50 +177,24 @@ class TubeConvApp {
     }
 
     /**
-     * Handle convert button click
+     * Handle convert button click - directly start conversion
      */
     async handleConvert() {
         if (!this.validateUrl() || this.isConverting) return;
         
         const url = this.urlInput.value.trim();
         
-        try {
-            this.showSection('loading');
-            this.updateLoadingStep(1, 'active');
-            this.updateProgress(10, 'Fetching video information...');
-            
-            const response = await fetch('/api/preview', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url })
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            
-            this.updateProgress(100, 'Video information loaded');
-            this.updateLoadingStep(1, 'completed');
-            
-            setTimeout(() => {
-                this.displayPreview(data);
-                this.showSection('preview');
-            }, 500);
-            
-        } catch (error) {
-            console.error('Preview failed:', error);
-            this.showError('Failed to fetch video information. Please check the URL and try again.');
-        }
+        // Start conversion immediately without preview
+        await this.startConversion();
     }
 
     /**
-     * Display video preview
+     * Display video preview - DEPRECATED: Direct conversion enabled
      */
+    /*
     displayPreview(data) {
-        if (this.previewThumbnail) this.previewThumbnail.src = data.thumbnail;
-        if (this.previewTitle) this.previewTitle.textContent = data.title;
+        if (this.previewThumbnail) this.previewThumbnail.src = data.thumbnailUrl;
+        if (this.previewTitle) this.previewTitle.textContent = data.videoTitle;
         if (this.previewChannel) this.previewChannel.textContent = data.channel;
         if (this.previewDuration) this.previewDuration.textContent = this.formatDuration(data.duration);
         
@@ -222,12 +202,13 @@ class TubeConvApp {
         if (this.selectedQuality) this.selectedQuality.textContent = `${selectedQuality} kbps`;
         
         // Pre-fill metadata
-        if (this.customTitle) this.customTitle.value = data.title;
+        if (this.customTitle) this.customTitle.value = data.videoTitle;
         if (this.customArtist) this.customArtist.value = data.channel;
     }
+    */
 
     /**
-     * Start conversion process
+     * Start conversion process directly
      */
     async startConversion() {
         if (this.isConverting) return;
@@ -235,10 +216,6 @@ class TubeConvApp {
         this.isConverting = true;
         const url = this.urlInput.value.trim();
         const audioQuality = this.getSelectedQuality();
-        const metadata = {
-            title: this.customTitle?.value || '',
-            artist: this.customArtist?.value || ''
-        };
         
         try {
             this.showSection('loading');
@@ -249,7 +226,14 @@ class TubeConvApp {
             const response = await fetch('/api/convert', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url, audioQuality, metadata })
+                body: JSON.stringify({ 
+                    url, 
+                    audioQuality,
+                    metadata: {
+                        title: '', // Will be auto-filled by server
+                        artist: '' // Will be auto-filled by server
+                    }
+                })
             });
             
             if (!response.ok) {
@@ -258,18 +242,23 @@ class TubeConvApp {
             
             const data = await response.json();
             
-            // Simulate conversion progress
-            await this.simulateProgress();
+            // Update final progress
+            this.updateProgress(100, 'Conversion completed!');
+            this.updateLoadingStep(3, 'completed');
             
-            this.currentDownloadUrl = data.downloadUrl;
-            this.displayResult(data);
-            this.showSection('result');
+            setTimeout(() => {
+                this.displayResult(data);
+                this.showSection('result');
+                this.isConverting = false;
+                
+                // Show success message
+                this.showToast('Conversion completed successfully!', 'success');
+            }, 1000);
             
         } catch (error) {
             console.error('Conversion failed:', error);
-            this.showError('Conversion failed. Please try again or check if the video is available.');
-        } finally {
             this.isConverting = false;
+            this.showError(error.message || 'Conversion failed. Please try again.');
         }
     }
 
@@ -311,10 +300,13 @@ class TubeConvApp {
      * Display conversion result
      */
     displayResult(data) {
-        if (this.videoThumbnail) this.videoThumbnail.src = data.thumbnail;
-        if (this.videoTitle) this.videoTitle.textContent = data.title;
+        if (this.videoThumbnail) this.videoThumbnail.src = data.thumbnailUrl;
+        if (this.videoTitle) this.videoTitle.textContent = data.videoTitle;
         if (this.videoDuration) this.videoDuration.textContent = this.formatDuration(data.duration);
         if (this.audioQualityDisplay) this.audioQualityDisplay.textContent = `${data.audioQuality} kbps`;
+        
+        // Store the download URL for the download button
+        this.currentDownloadUrl = data.downloadUrl;
     }
 
     /**
@@ -345,9 +337,9 @@ class TubeConvApp {
             case 'input':
                 targetSection = this.inputSection;
                 break;
-            case 'preview':
-                targetSection = this.previewSection;
-                break;
+            // case 'preview': // REMOVED - Direct conversion enabled
+            //     targetSection = this.previewSection;
+            //     break;
             case 'loading':
                 targetSection = this.loadingSection;
                 break;
