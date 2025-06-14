@@ -128,23 +128,160 @@ tubeconv/
 
 ## 🐳 Docker Deployment
 
-### Quick Docker Run
-```bash
-# Build and run with Docker Compose
-docker-compose up -d
+### 🚀 Quick Start with Docker Hub
 
-# Or build manually
+The easiest way to run TubeConv is using our pre-built Docker image from Docker Hub:
+
+```bash
+# Pull and run the latest version
+docker run -d \
+  --name tubeconv \
+  -p 3000:3000 \
+  --restart unless-stopped \
+  fabriziosalmi/tubeconv:latest
+
+# Access at http://localhost:3000
+```
+
+### 📦 Available Docker Images
+
+| Tag | Description | Size |
+|-----|-------------|------|
+| `fabriziosalmi/tubeconv:latest` | Latest stable release | ~150MB |
+| `fabriziosalmi/tubeconv:v1.0.0` | Specific version | ~150MB |
+
+### 🔧 Docker Compose (Recommended)
+
+Create a `docker-compose.yml` file:
+
+```yaml
+version: '3.8'
+services:
+  tubeconv:
+    image: fabriziosalmi/tubeconv:latest
+    container_name: tubeconv
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - tubeconv_downloads:/app/downloads
+      - tubeconv_temp:/app/temp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  tubeconv_downloads:
+  tubeconv_temp:
+```
+
+Then run:
+```bash
+docker-compose up -d
+```
+
+### 🛠️ Build Your Own Image
+
+If you want to build from source:
+
+```bash
+# Clone the repository
+git clone https://github.com/fabriziosalmi/tubeconv.git
+cd tubeconv
+
+# Build the image
 docker build -t tubeconv .
+
+# Run your custom build
 docker run -p 3000:3000 tubeconv
 ```
 
-### Environment Variables
-```env
-PORT=3000                    # Server port
-NODE_ENV=production         # Environment mode
-CLEANUP_INTERVAL=3600000    # File cleanup interval (1 hour)
-FILE_RETENTION=1800000      # File retention time (30 minutes)
+### 🔄 Multi-Architecture Support
+
+Our Docker images support multiple architectures:
+- `linux/amd64` (Intel/AMD 64-bit)
+- `linux/arm64` (ARM 64-bit, Apple M1/M2, Raspberry Pi 4)
+
+### ⚙️ Environment Variables
+
+Configure the container with these environment variables:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3000` | Server port |
+| `NODE_ENV` | `production` | Environment mode |
+| `CLEANUP_INTERVAL` | `3600000` | File cleanup interval (ms) |
+| `FILE_RETENTION` | `1800000` | File retention time (ms) |
+
+### 📁 Persistent Storage
+
+To persist downloads and avoid losing files:
+
+```bash
+docker run -d \
+  --name tubeconv \
+  -p 3000:3000 \
+  -v tubeconv_downloads:/app/downloads \
+  -v tubeconv_temp:/app/temp \
+  fabriziosalmi/tubeconv:latest
 ```
+
+### 🔄 Updates
+
+To update to the latest version:
+
+```bash
+# Stop and remove the old container
+docker stop tubeconv && docker rm tubeconv
+
+# Pull the latest image
+docker pull fabriziosalmi/tubeconv:latest
+
+# Start with the new image
+docker run -d \
+  --name tubeconv \
+  -p 3000:3000 \
+  --restart unless-stopped \
+  fabriziosalmi/tubeconv:latest
+```
+
+### 🐛 Docker Troubleshooting
+
+<details>
+<summary><strong>Container won't start</strong></summary>
+
+```bash
+# Check container logs
+docker logs tubeconv
+
+# Check if port is already in use
+docker run -p 8080:3000 fabriziosalmi/tubeconv:latest
+```
+</details>
+
+<details>
+<summary><strong>Permission issues</strong></summary>
+
+```bash
+# Run with specific user
+docker run --user 1001:1001 -p 3000:3000 fabriziosalmi/tubeconv:latest
+```
+</details>
+
+<details>
+<summary><strong>Performance issues</strong></summary>
+
+```bash
+# Allocate more resources
+docker run -m 512m --cpus 2 -p 3000:3000 fabriziosalmi/tubeconv:latest
+```
+</details>
 
 ## 🧪 Testing
 
