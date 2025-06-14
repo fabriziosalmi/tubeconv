@@ -1,0 +1,35 @@
+# Node modules
+node_modules
+npm-debug.log*
+
+# Runtime directories
+temp/
+downloads/
+logs/
+
+# Development files
+.git
+.gitignore
+*.md
+.env*
+.vscode/
+.idea/
+
+# Test files
+tests/
+*.test.js
+coverage/
+
+# Documentation
+docs/
+*.md
+screenshot*.png
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker files
+Dockerfile*
+docker-compose*
+.dockerignore
