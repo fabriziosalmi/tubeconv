@@ -1,8 +1,25 @@
-# 🎵 TubeConv - YouTube to MP3 Converter
+# 🎵 TubeConv - Universal Video to MP3 Converter
 
-> A modern, blazing-fast web application that converts YouTube videos to high-quality MP3 files with a beautiful, responsive interface.
+> A modern, blazing-fast web application that converts videos from **1000+ sites** to high-quality MP3 files with a beautiful, responsive interface.
 
 ![screenshot](https://github.com/fabriziosalmi/tubeconv/blob/main/screenshot_1.png?raw=true)
+
+## 🌐 **Supported Sites**
+
+TubeConv supports **over 1000 video platforms** thanks to the powerful [yt-dlp](https://github.com/yt-dlp/yt-dlp) backend, including:
+
+- **🎥 YouTube** - The world's largest video platform
+- **📱 TikTok** - Short-form videos and trending content  
+- **📷 Instagram** - Stories, reels, and posts
+- **🎬 Vimeo** - Professional video hosting
+- **🎮 Twitch** - Gaming streams and clips
+- **📘 Facebook** - Social media videos
+- **🐦 Twitter/X** - Tweet videos and clips
+- **🎪 Dailymotion** - European video platform
+- **🎧 SoundCloud** - Music and audio content
+- **💬 Reddit** - Community videos
+
+**And hundreds more!** See the [complete list of supported sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) for all platforms.
 
 ## ✨ Features
 
@@ -71,22 +88,28 @@ npm start
 
 🎉 **That's it!** Open [http://localhost:3000](http://localhost:3000) and start converting!
 
+## ⚖️ Legal Disclaimer
+
+> **⚠️ Important**: TubeConv is designed for personal use and educational purposes only. Please ensure you have the right to download and convert content from any platform. Respect copyright laws, terms of service, and content creators' rights. Users are solely responsible for compliance with applicable laws and regulations in their jurisdiction.
+
 ## 📖 Usage Guide
 
 ### Web Interface
-1. **Paste YouTube URL** - Copy any YouTube video URL
-2. **Click Convert to MP3** - Choose your preferred audio quality
+1. **Paste Video URL** - Copy any video URL from supported sites (YouTube, TikTok, Instagram, etc.)
+2. **Click Convert to MP3** - Choose your preferred audio quality (128-320 kbps)
 3. **Download MP3** - Get your high-quality audio file
 
 ### API Usage
 
 ```javascript
-// Convert a YouTube video
+// Convert videos from any supported platform
 const response = await fetch('/api/convert', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // YouTube
+    // url: 'https://www.tiktok.com/@user/video/1234567890', // TikTok
+    // url: 'https://vimeo.com/123456789', // Vimeo
     audioQuality: '320'
   })
 });

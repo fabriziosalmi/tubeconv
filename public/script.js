@@ -18,7 +18,7 @@ class TubeConvApp {
         
         // Show welcome message
         setTimeout(() => {
-            this.showToast('Welcome to TubeConv! Paste a YouTube URL to get started.', 'info', 3000);
+            this.showToast('Welcome to TubeConv! Paste a video URL from any supported site to get started.', 'info', 3000);
         }, 500);
     }
 
@@ -139,11 +139,11 @@ class TubeConvApp {
     }
 
     /**
-     * Validate YouTube URL
+     * Validate video URL
      */
     validateUrl() {
         const url = this.urlInput.value.trim();
-        const isValid = this.isValidYouTubeUrl(url);
+        const isValid = this.isValidVideoUrl(url);
         
         if (this.convertBtn) {
             this.convertBtn.disabled = !isValid;
@@ -165,15 +165,53 @@ class TubeConvApp {
     }
 
     /**
-     * Check if URL is a valid YouTube URL
+     * Check if URL is a valid video URL from supported sites
      */
-    isValidYouTubeUrl(url) {
-        const patterns = [
-            /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]{11}/,
-            /^https?:\/\/(www\.)?youtube\.com\/embed\/[a-zA-Z0-9_-]{11}/,
-            /^https?:\/\/(www\.)?youtube\.com\/v\/[a-zA-Z0-9_-]{11}/
-        ];
-        return patterns.some(pattern => pattern.test(url));
+    isValidVideoUrl(url) {
+        try {
+            const urlObj = new URL(url);
+            
+            // Popular video platforms that are commonly used
+            const supportedDomains = [
+                // YouTube
+                'youtube.com', 'youtu.be', 'm.youtube.com',
+                // TikTok
+                'tiktok.com', 'vm.tiktok.com',
+                // Instagram
+                'instagram.com', 'instagr.am',
+                // Vimeo
+                'vimeo.com', 'player.vimeo.com',
+                // Twitch
+                'twitch.tv', 'clips.twitch.tv',
+                // Facebook
+                'facebook.com', 'fb.watch',
+                // Twitter/X
+                'twitter.com', 'x.com',
+                // Dailymotion
+                'dailymotion.com', 'dai.ly',
+                // Other popular platforms
+                'soundcloud.com', 'reddit.com'
+            ];
+            
+            const hostname = urlObj.hostname.toLowerCase().replace(/^www\./, '');
+            
+            // Check if it's from a known supported domain
+            const isKnownDomain = supportedDomains.some(domain => 
+                hostname === domain || hostname.endsWith('.' + domain)
+            );
+            
+            // If it's a known domain, return true
+            if (isKnownDomain) {
+                return true;
+            }
+            
+            // Otherwise, accept any valid URL and let yt-dlp handle it
+            // This allows for the 1000+ sites that yt-dlp supports
+            return true;
+        } catch (e) {
+            // If URL parsing fails, it's not a valid URL
+            return false;
+        }
     }
 
     /**

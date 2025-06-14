@@ -143,6 +143,15 @@ body::before {
     background-clip: text;
 }
 
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 400;
+    margin-top: var(--spacing-sm);
+    text-align: center;
+    opacity: 0.9;
+}
+
 .nav-menu {
     display: flex;
     gap: var(--spacing-md);
