@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TubeConv - YouTube to MP3 Converter</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                    <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/>
+                    <circle cx="16" cy="16" r="3" fill="white"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#667eea"/>
+                            <stop offset="1" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <h1>TubeConv</h1>
+            </div>
+            <p class="subtitle">Convert YouTube videos to high-quality MP3 files</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Input Section -->
+            <div class="input-section" id="inputSection">
+                <div class="input-container">
+                    <input 
+                        type="url" 
+                        id="urlInput" 
+                        placeholder="Paste YouTube URL here..."
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <button id="convertBtn" class="convert-btn" disabled>
+                        <span class="btn-text">Convert</span>
+                        <svg class="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 3L15 8H12V15H8V8H5L10 3Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Settings Toggle -->
+                <button class="settings-toggle" id="settingsToggle">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path d="M9 1L11.09 3.09L9 5.18L6.91 3.09L9 1ZM4.64 6.36L6.73 4.27L8.82 6.36L6.73 8.45L4.64 6.36ZM12.73 4.27L14.82 6.36L12.73 8.45L10.64 6.36L12.73 4.27ZM9 12.82L11.09 14.91L9 17L6.91 14.91L9 12.82Z" fill="currentColor"/>
+                    </svg>
+                    Settings
+                </button>
+            </div>
+
+            <!-- Settings Panel -->
+            <div class="settings-panel" id="settingsPanel">
+                <div class="settings-content">
+                    <h3>Audio Quality</h3>
+                    <div class="quality-options">
+                        <label class="radio-option">
+                            <input type="radio" name="audioQuality" value="128">
+                            <span class="radio-custom"></span>
+                            <span class="quality-text">128 kbps <small>(Good)</small></span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="audioQuality" value="192">
+                            <span class="radio-custom"></span>
+                            <span class="quality-text">192 kbps <small>(Better)</small></span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="audioQuality" value="256">
+                            <span class="radio-custom"></span>
+                            <span class="quality-text">256 kbps <small>(Great)</small></span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="audioQuality" value="320" checked>
+                            <span class="radio-custom"></span>
+                            <span class="quality-text">320 kbps <small>(Best)</small></span>
+                        </label>
+                    </div>
+                    
+                    <h3>Metadata (Optional)</h3>
+                    <div class="metadata-inputs">
+                        <input type="text" id="customTitle" placeholder="Custom title...">
+                        <input type="text" id="customArtist" placeholder="Custom artist...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-section" id="loadingSection">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                </div>
+                <p class="loading-text">Converting your video...</p>
+                <div class="loading-steps">
+                    <div class="step active" id="step1">
+                        <div class="step-indicator"></div>
+                        <span>Fetching video info</span>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-indicator"></div>
+                        <span>Downloading audio</span>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-indicator"></div>
+                        <span>Converting to MP3</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div class="result-section" id="resultSection">
+                <div class="video-info">
+                    <div class="thumbnail-container">
+                        <img id="videoThumbnail" alt="Video thumbnail" class="thumbnail">
+                    </div>
+                    <div class="video-details">
+                        <h3 id="videoTitle" class="video-title"></h3>
+                        <div class="video-meta">
+                            <span id="videoDuration" class="duration"></span>
+                            <span id="audioQualityDisplay" class="quality"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="download-section">
+                    <button id="downloadBtn" class="download-btn">
+                        <svg class="download-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 13L5 8H8V3H12V8H15L10 13Z" fill="currentColor"/>
+                            <path d="M3 15H17V17H3V15Z" fill="currentColor"/>
+                        </svg>
+                        Download MP3
+                    </button>
+                    <button id="convertAnotherBtn" class="convert-another-btn">
+                        Convert Another
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Section -->
+            <div class="error-section" id="errorSection">
+                <div class="error-icon">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <circle cx="24" cy="24" r="24" fill="#ff4757" opacity="0.1"/>
+                        <path d="M24 8C15.16 8 8 15.16 8 24C8 32.84 15.16 40 24 40C32.84 40 40 32.84 40 24C40 15.16 32.84 8 24 8ZM26 32H22V28H26V32ZM26 24H22V16H26V24Z" fill="#ff4757"/>
+                    </svg>
+                </div>
+                <h3 class="error-title">Conversion Failed</h3>
+                <p class="error-message" id="errorMessage"></p>
+                <button id="tryAgainBtn" class="try-again-btn">Try Again</button>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 TubeConv. Convert responsibly and respect copyright laws.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
