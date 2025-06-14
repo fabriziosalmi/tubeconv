@@ -1,0 +1,470 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "TubeConv API",
+    "description": "🎵 **YouTube to MP3 Converter API**\n\nConvert YouTube videos to high-qu        "responses": {
+          "200": {
+            "description": "Health check successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnhancedHealthResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service degraded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnhancedHealthResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Health check failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }les with ease. This API provides a simple and powerful interface for downloading and converting YouTube content.\n\n## Features\n- 🎯 **High-Quality Audio**: Support for 128kbps to 320kbps bitrates\n- 🚀 **Fast Processing**: Optimized conversion pipeline\n- 🔒 **Secure**: Rate limiting and input validation\n- 📱 **Mobile-Friendly**: Responsive design\n- 🧹 **Auto-Cleanup**: Temporary files are automatically removed\n\n## Rate Limits\n- **General**: 100 requests per 15 minutes\n- **Conversions**: 5 requests per 15 minutes\n- **Previews**: 20 requests per 5 minutes\n\n## Error Codes\n- `MISSING_URL`: URL parameter is required\n- `INVALID_URL`: Invalid YouTube URL format\n- `INVALID_QUALITY`: Invalid audio quality specified\n- `TITLE_TOO_LONG`: Title exceeds 100 characters\n- `ARTIST_TOO_LONG`: Artist name exceeds 100 characters\n- `PREVIEW_ERROR`: Failed to fetch video information\n- `CONVERSION_ERROR`: Failed to convert video\n\n## Usage Examples\n\n### Preview a Video\n```bash\ncurl -X POST \\\n  http://localhost:3000/api/preview \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"url\": \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\"}'\n```\n\n### Convert a Video\n```bash\ncurl -X POST \\\n  http://localhost:3000/api/convert \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"url\": \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\",\n    \"audioQuality\": \"320\",\n    \"metadata\": {\n      \"title\": \"Rick Astley - Never Gonna Give You Up\",\n      \"artist\": \"Rick Astley\"\n    }\n  }'\n```",
+    "version": "1.0.0",
+    "contact": {
+      "name": "TubeConv Support",
+      "email": "support@tubeconv.com",
+      "url": "https://github.com/tubeconv/tubeconv"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "termsOfService": "https://tubeconv.com/terms"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Conversion",
+      "description": "YouTube video conversion operations"
+    },
+    {
+      "name": "Health",
+      "description": "API health and status endpoints"
+    }
+  ],
+  "paths": {
+    "/api/preview": {
+      "post": {
+        "tags": ["Conversion"],
+        "summary": "Preview video information",
+        "description": "Get video metadata without downloading or converting",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Video information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/convert": {
+      "post": {
+        "tags": ["Conversion"],
+        "summary": "Convert YouTube video to MP3",
+        "description": "Download and convert a YouTube video to MP3 format",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConvertRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Conversion completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConvertResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Conversion failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health check",
+        "description": "Check API health and status",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/status": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Get API status information",
+        "description": "Returns general API status and available endpoints",
+        "responses": {
+          "200": {
+            "description": "API status information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PreviewRequest": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "YouTube video URL",
+            "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+          }
+        }
+      },
+      "PreviewResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "videoTitle": {
+            "type": "string",
+            "description": "Video title",
+            "example": "Rick Astley - Never Gonna Give You Up"
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Video thumbnail URL",
+            "example": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg"
+          },
+          "duration": {
+            "type": "string",
+            "description": "Video duration",
+            "example": "3:33"
+          },
+          "channel": {
+            "type": "string",
+            "description": "Channel name",
+            "example": "Rick Astley"
+          },
+          "viewCount": {
+            "type": "integer",
+            "description": "View count",
+            "example": 1234567890
+          }
+        }
+      },
+      "ConvertRequest": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "YouTube video URL",
+            "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+          },
+          "audioQuality": {
+            "type": "string",
+            "enum": ["128", "192", "256", "320"],
+            "default": "320",
+            "description": "Audio quality in kbps",
+            "example": "320"
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Custom title for the MP3 file",
+                "example": "My Custom Title"
+              },
+              "artist": {
+                "type": "string",
+                "description": "Custom artist for the MP3 file",
+                "example": "My Custom Artist"
+              }
+            }
+          }
+        }
+      },
+      "ConvertResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "videoTitle": {
+            "type": "string",
+            "description": "Video title",
+            "example": "Rick Astley - Never Gonna Give You Up"
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Video thumbnail URL",
+            "example": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg"
+          },
+          "duration": {
+            "type": "string",
+            "description": "Video duration",
+            "example": "3:33"
+          },
+          "downloadUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Download URL for the converted MP3 file",
+            "example": "http://localhost:3000/downloads/f0bad2f1-1341-4c97-a20b-68cf9867f4a1.mp3"
+          },
+          "audioQuality": {
+            "type": "string",
+            "description": "Audio quality used for conversion",
+            "example": "320"
+          }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "OK"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-06-14T10:30:00.000Z"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Invalid YouTube URL provided"
+          }
+        }
+      },
+      "StatusResponse": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "type": "string",
+            "example": "TubeConv API"
+          },
+          "version": {
+            "type": "string",
+            "example": "1.0.0"
+          },
+          "status": {
+            "type": "string",
+            "example": "operational"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-06-14T10:30:00.000Z"
+          },
+          "endpoints": {
+            "type": "object",
+            "properties": {
+              "preview": {
+                "type": "string",
+                "example": "/api/preview"
+              },
+              "convert": {
+                "type": "string",
+                "example": "/api/convert"
+              },
+              "health": {
+                "type": "string",
+                "example": "/api/health"
+              },
+              "docs": {
+                "type": "string",
+                "example": "/api-docs"
+              }
+            }
+          }
+        }
+      },
+      "EnhancedHealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["OK", "DEGRADED", "ERROR"],
+            "example": "OK"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-06-14T10:30:00.000Z"
+          },
+          "uptime": {
+            "type": "number",
+            "description": "Server uptime in seconds",
+            "example": 86400
+          },
+          "memory": {
+            "type": "object",
+            "properties": {
+              "rss": {
+                "type": "number",
+                "description": "Resident set size",
+                "example": 52428800
+              },
+              "heapTotal": {
+                "type": "number",
+                "description": "Total heap size",
+                "example": 20971520
+              },
+              "heapUsed": {
+                "type": "number",
+                "description": "Used heap size",
+                "example": 10485760
+              }
+            }
+          },
+          "dependencies": {
+            "type": "object",
+            "properties": {
+              "ytdlp": {
+                "type": "string",
+                "enum": ["OK", "ERROR"],
+                "example": "OK"
+              },
+              "ffmpeg": {
+                "type": "string",
+                "enum": ["OK", "ERROR"],
+                "example": "OK"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

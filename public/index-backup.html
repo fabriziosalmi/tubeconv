@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TubeConv - YouTube to MP3 Converter</title>
+    <meta name="description" content="Convert YouTube videos to high-quality MP3 files. Fast, secure, and free YouTube to MP3 converter with custom metadata support.">
+    <meta name="keywords" content="youtube to mp3, video converter, mp3 converter, youtube downloader, audio converter">
+    <meta name="author" content="TubeConv">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="TubeConv - YouTube to MP3 Converter">
+    <meta property="og:description" content="Convert YouTube videos to high-quality MP3 files instantly">
+    <meta property="og:image" content="/icons/icon-512x512.png">
+    <meta property="og:url" content="https://tubeconv.com">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TubeConv - YouTube to MP3 Converter">
+    <meta name="twitter:description" content="Convert YouTube videos to high-quality MP3 files instantly">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TubeConv">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#667eea">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "TubeConv",
+      "description": "Convert YouTube videos to high-quality MP3 files",
+      "url": "https://tubeconv.com",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Any",
+      "permissions": "https://tubeconv.com/terms",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- Enhanced Header with Navigation -->
+        <header class="header">
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <div class="logo">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                            <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/>
+                            <circle cx="16" cy="16" r="3" fill="white"/>
+                            <defs>
+                                <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#667eea"/>
+                                    <stop offset="1" stop-color="#764ba2"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <h1>TubeConv</h1>
+                    </div>
+                    <div class="version-badge">v1.0.0</div>
+                </div>
+                
+                <div class="nav-menu" id="navMenu">
+                    <a href="#converter" class="nav-link active" data-section="converter">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 3L15 8H12V15H8V8H5L10 3Z"/>
+                        </svg>
+                        Convert
+                    </a>
+                    <a href="#api-docs" class="nav-link" data-section="api">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M3 4C3 3.44772 3.44772 3 4 3H16C16.5523 3 17 3.44772 17 4V16C17 16.5523 16.5523 17 16 17H4C3.44772 17 3 16.5523 3 16V4ZM5 5V15H15V5H5Z"/>
+                            <path d="M7 7H13V9H7V7ZM7 11H11V13H7V11Z"/>
+                        </svg>
+                        API Docs
+                    </a>
+                    <a href="#features" class="nav-link" data-section="features">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"/>
+                        </svg>
+                        Features
+                    </a>
+                    <a href="#status" class="nav-link" data-section="status">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"/>
+                        </svg>
+                        Status
+                    </a>
+                </div>
+                
+                <button class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </nav>
+            
+            <div class="hero-section">
+                <p class="subtitle">Convert YouTube videos to high-quality MP3 files</p>
+                <div class="hero-stats" id="heroStats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="statConversions">0</span>
+                        <span class="stat-label">Conversions</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number online" id="statUptime">Online</span>
+                        <span class="stat-label">Status</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">Quality Options</span>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="quick-action" data-action="paste" title="Paste from clipboard (Ctrl+V)">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1H2z"/>
+                        </svg>
+                        Paste URL
+                    </button>
+                    <button class="quick-action" data-action="clear" title="Clear input">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                        </svg>
+                        Clear
+                    </button>
+                    <button class="quick-action" data-action="api-docs" title="Open API Documentation">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+                        </svg>
+                        API Docs
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Input Section -->
+            <div class="input-section" id="inputSection">
+                <div class="input-container">
+                    <input 
+                        type="url" 
+                        id="urlInput" 
+                        placeholder="Paste YouTube URL here..."
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <button id="convertBtn" class="convert-btn" disabled>
+                        <span class="btn-text">Convert</span>
+                        <svg class="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 3L15 8H12V15H8V8H5L10 3Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Settings Toggle -->
+                <button class="settings-toggle" id="settingsToggle">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path d="M9 1L11.09 3.09L9 5.18L6.91 3.09L9 1ZM4.64 6.36L6.73 4.27L8.82 6.36L6.73 8.45L4.64 6.36ZM12.73 4.27L14.82 6.36L12.73 8.45L10.64 6.36L12.73 4.27ZM9 12.82L11.09 14.91L9 17L6.91 14.91L9 12.82Z" fill="currentColor"/>
+                    </svg>
+                    Settings
+                </button>
+            </div>
+
+            <!-- Settings Panel -->
+            <div class="settings-panel" id="settingsPanel">
+                <div class="settings-content">
+                    <h3>Audio Quality</h3>
+                    <div class="quality-options">
+                        <label class="radio-option">
+                            <input type="radio" name="audioQuality" value="128">
+                            <span class="radio-custom"></span>
+                            <span class="quality-text">128 kbps <small>(Good)</small></span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="audioQuality" value="192">
+                            <span class="radio-custom"></span>
+                            <span class="quality-text">192 kbps <small>(Better)</small></span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="audioQuality" value="256">
+                            <span class="radio-custom"></span>
+                            <span class="quality-text">256 kbps <small>(Great)</small></span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="audioQuality" value="320" checked>
+                            <span class="radio-custom"></span>
+                            <span class="quality-text">320 kbps <small>(Best)</small></span>
+                        </label>
+                    </div>
+                    
+                    <h3>Metadata (Optional)</h3>
+                    <div class="metadata-inputs">
+                        <input type="text" id="customTitle" placeholder="Custom title...">
+                        <input type="text" id="customArtist" placeholder="Custom artist...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-section" id="loadingSection">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                </div>
+                <p class="loading-text">Converting your video...</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <span class="progress-text" id="progressText">0%</span>
+                </div>
+                <div class="eta-display" id="etaDisplay">
+                    <span class="eta-text">Estimated time: <span id="etaTime">--</span></span>
+                </div>
+                <div class="loading-steps">
+                    <div class="step active" id="step1">
+                        <div class="step-indicator"></div>
+                        <span>Fetching video info</span>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-indicator"></div>
+                        <span>Downloading audio</span>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-indicator"></div>
+                        <span>Converting to MP3</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div class="result-section" id="resultSection">
+                <div class="video-info">
+                    <div class="thumbnail-container">
+                        <img id="videoThumbnail" alt="Video thumbnail" class="thumbnail">
+                    </div>
+                    <div class="video-details">
+                        <h3 id="videoTitle" class="video-title"></h3>
+                        <div class="video-meta">
+                            <span id="videoDuration" class="duration"></span>
+                            <span id="audioQualityDisplay" class="quality"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="download-section">
+                    <button id="downloadBtn" class="download-btn">
+                        <svg class="download-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 13L5 8H8V3H12V8H15L10 13Z" fill="currentColor"/>
+                            <path d="M3 15H17V17H3V15Z" fill="currentColor"/>
+                        </svg>
+                        Download MP3
+                    </button>
+                    <button id="convertAnotherBtn" class="convert-another-btn">
+                        Convert Another
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Section -->
+            <div class="error-section" id="errorSection">
+                <div class="error-icon">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <circle cx="24" cy="24" r="24" fill="#ff4757" opacity="0.1"/>
+                        <path d="M24 8C15.16 8 8 15.16 8 24C8 32.84 15.16 40 24 40C32.84 40 40 32.84 40 24C40 15.16 32.84 8 24 8ZM26 32H22V28H26V32ZM26 24H22V16H26V24Z" fill="#ff4757"/>
+                    </svg>
+                </div>
+                <h3 class="error-title">Conversion Failed</h3>
+                <p class="error-message" id="errorMessage"></p>
+                <button id="tryAgainBtn" class="try-again-btn">Try Again</button>
+            </div>
+
+            <!-- Video Preview Section -->
+            <div class="preview-section" id="previewSection">
+                <div class="video-preview-card">
+                    <div class="preview-thumbnail-container">
+                        <img id="previewThumbnail" alt="Video preview" class="preview-thumbnail">
+                        <div class="preview-overlay">
+                            <svg class="play-icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                <circle cx="24" cy="24" r="24" fill="rgba(255,255,255,0.9)"/>
+                                <path d="M20 16L32 24L20 32V16Z" fill="#333"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="preview-details">
+                        <h3 id="previewTitle" class="preview-title"></h3>
+                        <div class="preview-meta">
+                            <span id="previewDuration" class="preview-duration"></span>
+                            <span id="previewChannel" class="preview-channel"></span>
+                        </div>
+                        <div class="conversion-options">
+                            <div class="quality-preview">
+                                <span>Quality: <strong id="selectedQuality">320 kbps</strong></span>
+                            </div>
+                            <button id="confirmConversion" class="confirm-btn">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M13 4L6 11L3 8" stroke="currentColor" stroke-width="2" fill="none"/>
+                                </svg>
+                                Confirm Conversion
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Documentation Section -->
+            <section class="page-section" id="apiSection">
+                <div class="section-header">
+                    <h2>API Documentation</h2>
+                    <p>Integrate TubeConv into your applications</p>
+                </div>
+                
+                <div class="api-cards">
+                    <div class="api-card">
+                        <div class="api-card-header">
+                            <h3>Interactive Swagger UI</h3>
+                            <span class="api-badge">Live</span>
+                        </div>
+                        <p>Explore and test our API endpoints with the interactive Swagger documentation.</p>
+                        <a href="/api-docs" target="_blank" class="api-link">
+                            Open API Docs
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8.636 3.5L12.5 7.364L8.636 11.228L7.95 10.542L10.742 7.75H3.5V6.978H10.742L7.95 4.186L8.636 3.5Z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    
+                    <div class="api-card">
+                        <div class="api-card-header">
+                            <h3>Quick Start</h3>
+                            <span class="api-badge">Guide</span>
+                        </div>
+                        <div class="code-example">
+                            <h4>Preview a Video</h4>
+                            <pre><code>curl -X POST http://localhost:3000/api/preview \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://youtube.com/watch?v=..."}'</code></pre>
+                        </div>
+                        <div class="code-example">
+                            <h4>Convert Video</h4>
+                            <pre><code>curl -X POST http://localhost:3000/api/convert \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://youtube.com/watch?v=...",
+    "audioQuality": "320",
+    "metadata": {
+      "title": "Custom Title",
+      "artist": "Custom Artist"
+    }
+  }'</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="api-card">
+                        <div class="api-card-header">
+                            <h3>Rate Limits</h3>
+                            <span class="api-badge">Info</span>
+                        </div>
+                        <div class="rate-limits">
+                            <div class="rate-limit-item">
+                                <span class="rate-limit-endpoint">General API</span>
+                                <span class="rate-limit-value">100 req/15min</span>
+                            </div>
+                            <div class="rate-limit-item">
+                                <span class="rate-limit-endpoint">Conversions</span>
+                                <span class="rate-limit-value">5 req/15min</span>
+                            </div>
+                            <div class="rate-limit-item">
+                                <span class="rate-limit-endpoint">Previews</span>
+                                <span class="rate-limit-value">20 req/5min</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="api-endpoints">
+                    <h3>Available Endpoints</h3>
+                    <div class="endpoint-list">
+                        <div class="endpoint-item">
+                            <span class="method post">POST</span>
+                            <span class="path">/api/preview</span>
+                            <span class="description">Get video metadata without downloading</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="method post">POST</span>
+                            <span class="path">/api/convert</span>
+                            <span class="description">Convert YouTube video to MP3</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="method get">GET</span>
+                            <span class="path">/api/health</span>
+                            <span class="description">System health and dependency status</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="method get">GET</span>
+                            <span class="path">/api/status</span>
+                            <span class="description">API status and version information</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Features Section -->
+            <section class="page-section" id="featuresSection">
+                <div class="section-header">
+                    <h2>Features & Capabilities</h2>
+                    <p>Everything you need for YouTube to MP3 conversion</p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+                            </svg>
+                        </div>
+                        <h3>High-Quality Audio</h3>
+                        <p>Convert to 128, 192, 256, or 320 kbps MP3 with crystal clear sound quality.</p>
+                        <div class="feature-details">
+                            <span class="detail-item">✓ 320kbps maximum quality</span>
+                            <span class="detail-item">✓ Optimized for music</span>
+                            <span class="detail-item">✓ Fast processing</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 1L9 9L1 12L9 15L12 23L15 15L23 12L15 9L12 1Z"/>
+                            </svg>
+                        </div>
+                        <h3>Custom Metadata</h3>
+                        <p>Add custom titles, artist names, and other metadata to your MP3 files.</p>
+                        <div class="feature-details">
+                            <span class="detail-item">✓ Custom title & artist</span>
+                            <span class="detail-item">✓ Automatic tagging</span>
+                            <span class="detail-item">✓ ID3 metadata support</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1L13.5 2.5L16.17 5.17L14.24 7.1L15.66 8.51L17.59 6.58L21 9ZM11 15.5L6.5 11L5.08 12.42L11 18.34L21 8.34L19.59 6.93L11 15.5Z"/>
+                            </svg>
+                        </div>
+                        <h3>Security & Privacy</h3>
+                        <p>Your data is safe with rate limiting, input validation, and automatic cleanup.</p>
+                        <div class="feature-details">
+                            <span class="detail-item">✓ No data storage</span>
+                            <span class="detail-item">✓ Secure processing</span>
+                            <span class="detail-item">✓ Auto file cleanup</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17,12V3A1,1 0 0,0 16,2H3A1,1 0 0,0 2,3V21L7,16H16A1,1 0 0,0 17,15V12M21,6H19V15H6V17A1,1 0 0,0 7,18H18L23,23V7A1,1 0 0,0 22,6H21Z"/>
+                            </svg>
+                        </div>
+                        <h3>RESTful API</h3>
+                        <p>Developer-friendly REST API with comprehensive documentation and examples.</p>
+                        <div class="feature-details">
+                            <span class="detail-item">✓ OpenAPI 3.0 spec</span>
+                            <span class="detail-item">✓ Rate limiting</span>
+                            <span class="detail-item">✓ Error handling</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17,7H22V17H17V19A1,1 0 0,0 18,20H20V22H17.5C16.95,22 16,21.55 16,21C16,21.55 15.05,22 14.5,22H12V20H14A1,1 0 0,0 15,19V5A1,1 0 0,0 14,4H12V2H14.5C15.05,2 16,2.45 16,3C16,2.45 16.95,2 17.5,2H20V4H18A1,1 0 0,0 17,5V7M2,7H13V9H4V15H13V17H2V7M20,9V15H17V9H20Z"/>
+                            </svg>
+                        </div>
+                        <h3>Progressive Web App</h3>
+                        <p>Install as an app on your device with offline capabilities and push notifications.</p>
+                        <div class="feature-details">
+                            <span class="detail-item">✓ Install to home screen</span>
+                            <span class="detail-item">✓ Offline support</span>
+                            <span class="detail-item">✓ Background sync</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                            </svg>
+                        </div>
+                        <h3>Real-time Monitoring</h3>
+                        <p>Track system health, performance metrics, and conversion statistics in real-time.</p>
+                        <div class="feature-details">
+                            <span class="detail-item">✓ Health monitoring</span>
+                            <span class="detail-item">✓ Performance tracking</span>
+                            <span class="detail-item">✓ Error reporting</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Status Section -->
+            <section class="page-section" id="statusSection">
+                <div class="section-header">
+                    <h2>System Status</h2>
+                    <p>Real-time monitoring of system health and performance</p>
+                </div>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="status-header">
+                            <h3>API Health</h3>
+                            <div class="status-indicator" id="apiStatus">
+                                <span class="status-dot"></span>
+                                <span class="status-text">Checking...</span>
+                            </div>
+                        </div>
+                        <div class="status-details" id="apiDetails">
+                            <div class="status-item">
+                                <span class="status-label">Uptime</span>
+                                <span class="status-value" id="uptimeValue">--</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Memory Usage</span>
+                                <span class="status-value" id="memoryValue">--</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Node Version</span>
+                                <span class="status-value" id="nodeVersion">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-card">
+                        <div class="status-header">
+                            <h3>Dependencies</h3>
+                            <div class="status-indicator" id="depsStatus">
+                                <span class="status-dot"></span>
+                                <span class="status-text">Checking...</span>
+                            </div>
+                        </div>
+                        <div class="status-details" id="depsDetails">
+                            <div class="status-item">
+                                <span class="status-label">yt-dlp</span>
+                                <span class="status-value" id="ytdlpStatus">--</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">FFmpeg</span>
+                                <span class="status-value" id="ffmpegStatus">--</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Storage</span>
+                                <span class="status-value" id="storageStatus">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-card">
+                        <div class="status-header">
+                            <h3>Performance</h3>
+                            <div class="status-indicator">
+                                <span class="status-dot active"></span>
+                                <span class="status-text">Monitoring</span>
+                            </div>
+                        </div>
+                        <div class="status-details">
+                            <div class="status-item">
+                                <span class="status-label">Avg Response Time</span>
+                                <span class="status-value" id="avgResponseTime">--</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Successful Conversions</span>
+                                <span class="status-value" id="successfulConversions">--</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Error Rate</span>
+                                <span class="status-value" id="errorRate">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status-actions">
+                    <button class="status-btn" id="refreshStatus">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 3A5 5 0 1 0 13 8H11A3 3 0 1 1 8 5V3Z"/>
+                            <path d="M8 0L12 4L8 8V0Z"/>
+                        </svg>
+                        Refresh Status
+                    </button>
+                    <a href="/api/health" target="_blank" class="status-btn secondary">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8.636 3.5L12.5 7.364L8.636 11.228L7.95 10.542L10.742 7.75H3.5V6.978H10.742L7.95 4.186L8.636 3.5Z"/>
+                        </svg>
+                        View Raw Health Data
+                    </a>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <p>&copy; 2025 TubeConv. Convert responsibly and respect copyright laws.</p>
+            </footer>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+</html>

@@ -6,17 +6,34 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "install-deps": "brew install yt-dlp ffmpeg"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "install-deps": "brew install yt-dlp ffmpeg",
+    "docker:build": "docker build -t tubeconv .",
+    "docker:run": "docker-compose up -d",
+    "docker:stop": "docker-compose down",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "multer": "^2.0.1",
     "uuid": "^9.0.1",
-    "node-cron": "^3.0.3"
+    "node-cron": "^3.0.3",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "swagger-ui-express": "^5.0.0",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "eslint": "^8.57.0",
+    "eslint-config-standard": "^17.1.0"
   },
   "keywords": ["youtube", "mp3", "converter", "audio"],
   "author": "TubeConv",
