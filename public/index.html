@@ -15,6 +15,7 @@
     <link rel="manifest" href="/manifest.json">
     
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles-enhanced.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -104,12 +105,55 @@
                                 </div>
                             </div>
                             
-                            <button id="convertBtn" class="convert-btn" disabled>
-                                <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M10 3L15 8H12V15H8V8H5L10 3Z"/>
-                                </svg>
-                                Convert to MP3
-                            </button>
+                            <!-- Format Selection -->
+                            <div class="format-selection">
+                                <label class="format-label">Output Format:</label>
+                                <div class="format-options">
+                                    <label class="radio-option">
+                                        <input type="radio" name="outputFormat" value="mp3" checked>
+                                        <span class="radio-custom"></span>
+                                        <span class="format-text">MP3</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="outputFormat" value="wav">
+                                        <span class="radio-custom"></span>
+                                        <span class="format-text">WAV</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="outputFormat" value="flac">
+                                        <span class="radio-custom"></span>
+                                        <span class="format-text">FLAC</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="outputFormat" value="mp4">
+                                        <span class="radio-custom"></span>
+                                        <span class="format-text">MP4</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="conversion-buttons">
+                                <button id="convertBtn" class="convert-btn primary" disabled>
+                                    <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10 3L15 8H12V15H8V8H5L10 3Z"/>
+                                    </svg>
+                                    Convert Single
+                                </button>
+                                
+                                <button id="batchBtn" class="convert-btn secondary" disabled>
+                                    <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+                                    </svg>
+                                    Batch Convert
+                                </button>
+                                
+                                <button id="playlistBtn" class="convert-btn secondary" disabled>
+                                    <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M3 4h14v2H3V4zm0 5h14v2H3V9zm0 5h14v2H3v-2z"/>
+                                    </svg>
+                                    Playlist
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -207,6 +251,120 @@
                     </div>
                 </div>
 
+                <!-- Batch Conversion Section -->
+                <div class="section batch-section" id="batchSection">
+                    <div class="batch-content">
+                        <h3 class="batch-title">Batch Conversion</h3>
+                        <p class="batch-description">Enter multiple URLs (one per line, max 10)</p>
+                        
+                        <div class="batch-input-container">
+                            <textarea 
+                                id="batchUrls" 
+                                class="batch-textarea" 
+                                placeholder="https://www.youtube.com/watch?v=example1
+https://www.youtube.com/watch?v=example2
+https://www.youtube.com/watch?v=example3"
+                                rows="6"
+                            ></textarea>
+                        </div>
+                        
+                        <div class="batch-actions">
+                            <button id="startBatchBtn" class="batch-start-btn primary">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+                                </svg>
+                                Start Batch Conversion
+                            </button>
+                            <button id="cancelBatchBtn" class="batch-cancel-btn secondary">
+                                Cancel
+                            </button>
+                        </div>
+                        
+                        <div class="batch-progress" id="batchProgress" style="display: none;">
+                            <h4>Batch Progress</h4>
+                            <div class="batch-stats">
+                                <span>Progress: <span id="batchProgressText">0/0</span></span>
+                                <span>Success: <span id="batchSuccessCount">0</span></span>
+                                <span>Failed: <span id="batchFailCount">0</span></span>
+                            </div>
+                            <div class="batch-progress-bar">
+                                <div id="batchProgressBarFill" class="batch-progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Playlist Section -->
+                <div class="section playlist-section" id="playlistSection">
+                    <div class="playlist-content">
+                        <h3 class="playlist-title">Playlist Information</h3>
+                        <div class="playlist-info" id="playlistInfo">
+                            <div class="playlist-header">
+                                <h4 id="playlistName" class="playlist-name">Loading playlist...</h4>
+                                <div class="playlist-stats">
+                                    <span id="playlistVideoCount">-- videos</span>
+                                </div>
+                            </div>
+                            
+                            <div class="playlist-preview" id="playlistPreview">
+                                <!-- Preview videos will be inserted here -->
+                            </div>
+                            
+                            <div class="playlist-actions">
+                                <button id="convertPlaylistBtn" class="playlist-convert-btn primary">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10 3L15 8H12V15H8V8H5L10 3Z"/>
+                                    </svg>
+                                    Convert Entire Playlist
+                                </button>
+                                <button id="cancelPlaylistBtn" class="playlist-cancel-btn secondary">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Batch Results Section -->
+                <div class="section batch-results-section" id="batchResultsSection">
+                    <div class="batch-results-content">
+                        <h3 class="batch-results-title">Batch Conversion Results</h3>
+                        <div class="batch-summary" id="batchSummary">
+                            <div class="summary-stats">
+                                <div class="stat-item success">
+                                    <span class="stat-number" id="totalSuccess">0</span>
+                                    <span class="stat-label">Successful</span>
+                                </div>
+                                <div class="stat-item error">
+                                    <span class="stat-number" id="totalFailed">0</span>
+                                    <span class="stat-label">Failed</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="totalProcessed">0</span>
+                                    <span class="stat-label">Total</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="batch-downloads" id="batchDownloads">
+                            <!-- Download links will be inserted here -->
+                        </div>
+                        
+                        <div class="batch-results-actions">
+                            <button id="downloadAllBtn" class="download-all-btn primary">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 12L15 7H12V3H8V7H5L10 12Z"/>
+                                    <path d="M3 15H17V17H3V15Z"/>
+                                </svg>
+                                Download All Files
+                            </button>
+                            <button id="newBatchBtn" class="new-batch-btn secondary">
+                                New Batch Conversion
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Error Section -->
                 <div class="section error-section" id="errorSection">
                     <div class="error-content">
@@ -243,6 +401,7 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <script src="script.js"></script>
+    <script src="script-enhanced.js"></script>
     <script src="analytics.js"></script>
 </body>
 </html>

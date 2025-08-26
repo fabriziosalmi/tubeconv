@@ -28,7 +28,15 @@
   "tags": [
     {
       "name": "Conversion",
-      "description": "YouTube video conversion operations"
+      "description": "Single video conversion operations"
+    },
+    {
+      "name": "Batch",
+      "description": "Batch and playlist conversion operations"
+    },
+    {
+      "name": "Format",
+      "description": "Multi-format conversion operations (MP3, WAV, FLAC, MP4)"
     },
     {
       "name": "Health",
@@ -189,6 +197,305 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/batch-convert": {
+      "post": {
+        "tags": ["Batch"],
+        "summary": "Batch convert multiple videos",
+        "description": "Convert multiple videos in a single request. Maximum 10 URLs per batch.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["urls"],
+                "properties": {
+                  "urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "maxItems": 10,
+                    "description": "Array of video URLs to convert",
+                    "example": [
+                      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                      "https://www.youtube.com/watch?v=oHg5SJYRHA0"
+                    ]
+                  },
+                  "audioQuality": {
+                    "type": "string",
+                    "enum": ["128", "192", "256", "320"],
+                    "default": "320",
+                    "description": "Audio quality in kbps"
+                  },
+                  "metadata": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch conversion completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "batchId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ConvertResponse"
+                      }
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string"
+                          },
+                          "error": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "summary": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "successful": {
+                          "type": "integer"
+                        },
+                        "failed": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "processingTime": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        }
+      }
+    },
+    "/api/playlist": {
+      "post": {
+        "tags": ["Batch"],
+        "summary": "Get playlist information",
+        "description": "Extract video URLs and metadata from a playlist.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Playlist URL",
+                    "example": "https://www.youtube.com/playlist?list=PLrAXtmRdnEQy1kJr5F3OzgWg5FiBCJo1D"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Playlist information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "playlistId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "playlistTitle": {
+                      "type": "string"
+                    },
+                    "totalVideos": {
+                      "type": "integer"
+                    },
+                    "videoUrls": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "previewVideos": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "thumbnail": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "duration": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          }
+        }
+      }
+    },
+    "/api/convert-format": {
+      "post": {
+        "tags": ["Format"],
+        "summary": "Convert video to multiple formats",
+        "description": "Convert videos to MP3, WAV, FLAC, MP4, or M4A formats.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Video URL",
+                    "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": ["mp3", "wav", "flac", "mp4", "m4a"],
+                    "default": "mp3",
+                    "description": "Output format"
+                  },
+                  "audioQuality": {
+                    "type": "string",
+                    "enum": ["128", "192", "256", "320"],
+                    "default": "320",
+                    "description": "Audio quality in kbps (for audio formats)"
+                  },
+                  "videoQuality": {
+                    "type": "string",
+                    "enum": ["480", "720", "1080"],
+                    "default": "720",
+                    "description": "Video quality (for MP4 format)"
+                  },
+                  "metadata": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Format conversion completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "format": {
+                      "type": "string"
+                    },
+                    "videoTitle": {
+                      "type": "string"
+                    },
+                    "thumbnailUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "duration": {
+                      "type": "string"
+                    },
+                    "downloadUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "audioQuality": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "videoQuality": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "processingTime": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "500": {
+            "description": "Conversion failed"
           }
         }
       }
@@ -477,6 +784,23 @@
                 "example": "/api-docs"
               }
             }
+          }
+        }
+      },
+      "Metadata": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Custom title for the audio file (max 100 characters)",
+            "example": "My Custom Title",
+            "maxLength": 100
+          },
+          "artist": {
+            "type": "string",
+            "description": "Custom artist name for the audio file (max 100 characters)",
+            "example": "Custom Artist",
+            "maxLength": 100
           }
         }
       },

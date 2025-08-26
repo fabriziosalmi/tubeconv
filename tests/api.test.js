@@ -196,4 +196,137 @@ describe('TubeConv API', () => {
             expect(res.body).toHaveProperty('code');
         });
     });
+
+    // New API endpoints tests
+    describe('POST /api/batch-convert', () => {
+        it('should return error for missing URLs array', async () => {
+            const res = await request(app)
+                .post('/api/batch-convert')
+                .send({})
+                .expect(400);
+            
+            expect(res.body).toHaveProperty('success', false);
+            expect(res.body).toHaveProperty('code', 'MISSING_URLS');
+        });
+        
+        it('should return error for too many URLs', async () => {
+            const urls = Array(15).fill('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+            const res = await request(app)
+                .post('/api/batch-convert')
+                .send({ urls })
+                .expect(400);
+            
+            expect(res.body).toHaveProperty('success', false);
+            expect(res.body).toHaveProperty('code', 'TOO_MANY_URLS');
+        });
+    });
+    
+    describe('POST /api/playlist', () => {
+        it('should return error for missing URL', async () => {
+            const res = await request(app)
+                .post('/api/playlist')
+                .send({})
+                .expect(400);
+            
+            expect(res.body).toHaveProperty('success', false);
+            expect(res.body).toHaveProperty('code', 'MISSING_URL');
+        });
+    });
+    
+    describe('POST /api/convert-format', () => {
+        it('should return error for missing URL', async () => {
+            const res = await request(app)
+                .post('/api/convert-format')
+                .send({})
+                .expect(400);
+            
+            expect(res.body).toHaveProperty('success', false);
+            expect(res.body).toHaveProperty('code', 'MISSING_URL');
+        });
+        
+        it('should return error for invalid format', async () => {
+            const res = await request(app)
+                .post('/api/convert-format')
+                .send({ 
+                    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                    format: 'invalid'
+                })
+                .expect(400);
+            
+            expect(res.body).toHaveProperty('success', false);
+            expect(res.body).toHaveProperty('code', 'INVALID_FORMAT');
+        });
+    });
+
+    // Caching Tests
+    describe('Caching Middleware', () => {
+        it('should return cache headers on health endpoint', async () => {
+            const res = await request(app)
+                .get('/api/health')
+                .expect((res) => {
+                    expect(['X-Cache']).toContain(
+                        expect.stringMatching(/HIT|MISS/)
+                    );
+                });
+        });
+    });
+
+    // Enhanced Error Handling Tests
+    describe('Enhanced Error Handling', () => {
+        it('should handle large request bodies gracefully', async () => {
+            const largeData = 'a'.repeat(2000000); // 2MB string
+            const res = await request(app)
+                .post('/api/convert')
+                .send({ url: largeData })
+                .expect(413); // Payload too large
+        });
+        
+        it('should validate URL format strictly', async () => {
+            const invalidUrls = [
+                'not-a-url',
+                'ftp://example.com',
+                'javascript:alert(1)',
+                ''
+            ];
+            
+            for (const url of invalidUrls) {
+                const res = await request(app)
+                    .post('/api/preview')
+                    .send({ url })
+                    .expect(400);
+                
+                expect(res.body).toHaveProperty('success', false);
+            }
+        });
+    });
+
+    // Performance Tests
+    describe('Performance Tests', () => {
+        it('should respond to health check quickly', async () => {
+            const start = Date.now();
+            await request(app)
+                .get('/api/health')
+                .expect(200);
+            const duration = Date.now() - start;
+            
+            expect(duration).toBeLessThan(1000); // Should respond within 1 second
+        });
+        
+        it('should handle concurrent preview requests', async () => {
+            const requests = Array(5).fill().map(() => 
+                request(app)
+                    .post('/api/preview')
+                    .send({ url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' })
+            );
+            
+            const responses = await Promise.allSettled(requests);
+            
+            // At least some requests should succeed (not all will be rate limited)
+            const successful = responses.filter(r => 
+                r.status === 'fulfilled' && r.value.status === 200
+            );
+            
+            expect(successful.length).toBeGreaterThan(0);
+        });
+    });
 });

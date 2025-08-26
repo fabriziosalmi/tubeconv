@@ -111,10 +111,55 @@ const initDirectories = async () => {
     }
 };
 
-// YouTube URL validation
+// Enhanced URL validation with security checks
+const isValidVideoUrl = (url) => {
+    try {
+        const urlObj = new URL(url);
+        
+        // Security: Block dangerous protocols
+        const allowedProtocols = ['http:', 'https:'];
+        if (!allowedProtocols.includes(urlObj.protocol)) {
+            return false;
+        }
+        
+        // Security: Block local/internal addresses
+        const hostname = urlObj.hostname.toLowerCase();
+        if (hostname === 'localhost' || 
+            hostname.startsWith('127.') || 
+            hostname.startsWith('10.') || 
+            hostname.startsWith('192.168.') || 
+            hostname.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./)) {
+            return false;
+        }
+        
+        // Supported video platforms
+        const supportedDomains = [
+            'youtube.com', 'youtu.be', 'm.youtube.com',
+            'tiktok.com', 'vm.tiktok.com',
+            'instagram.com', 'instagr.am',
+            'vimeo.com', 'player.vimeo.com',
+            'twitch.tv', 'clips.twitch.tv',
+            'facebook.com', 'fb.watch',
+            'twitter.com', 'x.com',
+            'dailymotion.com', 'dai.ly',
+            'soundcloud.com', 'reddit.com'
+        ];
+        
+        const baseDomain = hostname.replace(/^www\./, '');
+        const isSupported = supportedDomains.some(domain => 
+            baseDomain === domain || baseDomain.endsWith('.' + domain)
+        );
+        
+        return isSupported;
+    } catch (error) {
+        return false;
+    }
+};
+
+// Legacy YouTube-only validation (for backward compatibility)
 const isValidYouTubeUrl = (url) => {
     const regex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/)|youtu\.be\/)[\w-]+(&[\w=]*)?$/;
-    return regex.test(url);
+    return regex.test(url) && isValidVideoUrl(url);
 };
 
 // Execute command with promise
@@ -400,10 +445,33 @@ const cleanupFiles = async (files) => {
     }
 };
 
+// Request caching middleware
+const NodeCache = require('node-cache');
+const cache = new NodeCache({ stdTTL: 300 }); // 5 minutes cache
+
+const cacheMiddleware = (duration) => (req, res, next) => {
+    const key = req.originalUrl;
+    const cached = cache.get(key);
+    
+    if (cached) {
+        res.set('X-Cache', 'HIT');
+        return res.json(cached);
+    }
+    
+    res.sendResponse = res.json;
+    res.json = (data) => {
+        cache.set(key, data, duration);
+        res.set('X-Cache', 'MISS');
+        res.sendResponse(data);
+    };
+    
+    next();
+};
+
 // Enhanced API endpoints
 
 // Comprehensive health check endpoint
-app.get('/api/health', async (req, res) => {
+app.get('/api/health', cacheMiddleware(60), async (req, res) => {
     try {
         const health = await getSystemHealth();
         res.status(health.status === 'OK' ? 200 : 503).json(health);
@@ -570,18 +638,321 @@ app.post('/api/convert', conversionLimiter, validateConversionRequest, async (re
     }
 });
 
-// Health check endpoint
-app.get('/api/health', async (req, res) => {
+// New Feature: Batch Conversion endpoint
+app.post('/api/batch-convert', conversionLimiter, async (req, res) => {
+    const startTime = Date.now();
+    const batchId = uuidv4();
+    const { urls, audioQuality = '320', metadata = {} } = req.body;
+    
     try {
-        const health = await getSystemHealth();
-        res.json(health);
+        // Validate input
+        if (!Array.isArray(urls) || urls.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'URLs array is required and must not be empty',
+                code: 'MISSING_URLS'
+            });
+        }
+        
+        if (urls.length > 10) {
+            return res.status(400).json({
+                success: false,
+                error: 'Maximum 10 URLs allowed per batch',
+                code: 'TOO_MANY_URLS'
+            });
+        }
+        
+        console.log(`📦 [${batchId}] Starting batch conversion: ${urls.length} URLs`);
+        
+        const results = [];
+        const errors = [];
+        
+        for (let i = 0; i < urls.length; i++) {
+            const url = urls[i].trim();
+            try {
+                if (!isValidYouTubeUrl(url)) {
+                    errors.push({ url, error: 'Invalid URL' });
+                    continue;
+                }
+                
+                console.log(`🎵 [${batchId}] Processing ${i + 1}/${urls.length}: ${url}`);
+                
+                // Get video info
+                const videoInfo = await getVideoInfo(url);
+                
+                // Generate unique filename
+                const uniqueId = uuidv4();
+                const tempAudioPath = `temp/${uniqueId}_temp`;
+                const outputMp3Path = `downloads/${uniqueId}.mp3`;
+                
+                // Download and convert
+                const downloadedAudioPath = await downloadAudio(url, tempAudioPath);
+                await convertToMp3Enhanced(downloadedAudioPath, outputMp3Path, audioQuality, metadata);
+                
+                // Clean up temp file
+                await fs.unlink(downloadedAudioPath).catch(() => {});
+                
+                const downloadUrl = `${req.protocol}://${req.get('host')}/downloads/${uniqueId}.mp3`;
+                
+                results.push({
+                    url,
+                    videoTitle: videoInfo.title,
+                    thumbnailUrl: videoInfo.thumbnail,
+                    duration: videoInfo.duration,
+                    downloadUrl,
+                    audioQuality
+                });
+                
+                // Schedule cleanup
+                setTimeout(async () => {
+                    try {
+                        await fs.unlink(outputMp3Path);
+                        console.log(`🧹 [${batchId}] Auto-cleaned: ${outputMp3Path}`);
+                    } catch (error) {
+                        console.error(`❌ Failed to auto-cleanup ${outputMp3Path}:`, error.message);
+                    }
+                }, 60 * 60 * 1000); // 1 hour
+                
+            } catch (error) {
+                console.error(`❌ [${batchId}] Error processing ${url}:`, error.message);
+                errors.push({ url, error: error.message });
+            }
+        }
+        
+        const processingTime = Date.now() - startTime;
+        console.log(`✅ [${batchId}] Batch conversion completed in ${processingTime}ms`);
+        
+        res.json({
+            success: true,
+            batchId,
+            results,
+            errors,
+            summary: {
+                total: urls.length,
+                successful: results.length,
+                failed: errors.length
+            },
+            processingTime: `${processingTime}ms`
+        });
+        
     } catch (error) {
+        console.error(`❌ [${batchId}] Batch conversion error:`, error);
         res.status(500).json({
             success: false,
-            error: 'Failed to retrieve system health'
+            batchId,
+            error: error.message || 'Batch conversion failed',
+            code: 'BATCH_CONVERSION_ERROR'
         });
     }
 });
+
+// New Feature: Playlist information endpoint
+app.post('/api/playlist', previewLimiter, async (req, res) => {
+    const { url } = req.body;
+    const playlistId = uuidv4();
+    
+    try {
+        if (!url) {
+            return res.status(400).json({
+                success: false,
+                error: 'Playlist URL is required',
+                code: 'MISSING_URL'
+            });
+        }
+        
+        console.log(`📋 [${playlistId}] Fetching playlist info: ${url}`);
+        
+        // Get playlist information
+        const playlistTitle = await executeCommand('yt-dlp', ['--get-filename', '-o', '%(playlist_title)s', url])
+            .catch(() => 'Unknown Playlist');
+        
+        const playlistCount = await executeCommand('yt-dlp', ['--get-filename', '-o', '%(playlist_count)s', url])
+            .catch(() => '0');
+        
+        // Get individual video URLs from playlist
+        const videoUrls = await executeCommand('yt-dlp', ['--get-url', '--flat-playlist', url])
+            .then(output => output.split('\n').filter(line => line.trim()))
+            .catch(() => []);
+        
+        // Get basic info for first few videos as preview
+        const previewVideos = [];
+        const maxPreview = Math.min(5, videoUrls.length);
+        
+        for (let i = 0; i < maxPreview; i++) {
+            try {
+                const videoUrl = videoUrls[i];
+                const videoInfo = await getVideoInfo(videoUrl);
+                previewVideos.push({
+                    url: videoUrl,
+                    title: videoInfo.title,
+                    thumbnail: videoInfo.thumbnail,
+                    duration: videoInfo.duration
+                });
+            } catch (error) {
+                console.warn(`Warning: Could not get info for video ${i + 1}`);
+            }
+        }
+        
+        res.json({
+            success: true,
+            playlistId,
+            playlistTitle,
+            totalVideos: parseInt(playlistCount) || videoUrls.length,
+            videoUrls,
+            previewVideos,
+            note: 'Use /api/batch-convert with videoUrls to convert the entire playlist'
+        });
+        
+    } catch (error) {
+        console.error(`❌ [${playlistId}] Playlist fetch error:`, error);
+        res.status(500).json({
+            success: false,
+            playlistId,
+            error: error.message || 'Failed to fetch playlist information',
+            code: 'PLAYLIST_ERROR'
+        });
+    }
+});
+
+// New Feature: Format support endpoint (MP4, WAV, FLAC)
+app.post('/api/convert-format', conversionLimiter, async (req, res) => {
+    const startTime = Date.now();
+    const requestId = uuidv4();
+    let tempFiles = [];
+    
+    try {
+        const { url, format = 'mp3', audioQuality = '320', videoQuality = '720', metadata = {} } = req.body;
+        
+        // Validate input
+        if (!url) {
+            return res.status(400).json({
+                success: false,
+                error: 'URL is required',
+                code: 'MISSING_URL'
+            });
+        }
+        
+        const validFormats = ['mp3', 'wav', 'flac', 'mp4', 'm4a'];
+        if (!validFormats.includes(format)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid format. Supported: ' + validFormats.join(', '),
+                code: 'INVALID_FORMAT'
+            });
+        }
+        
+        console.log(`🎵 [${requestId}] Starting ${format.toUpperCase()} conversion: ${url}`);
+        
+        // Get video info
+        const videoInfo = await getVideoInfo(url);
+        
+        // Generate unique filename
+        const uniqueId = uuidv4();
+        const tempPath = `temp/${uniqueId}_temp`;
+        const outputPath = `downloads/${uniqueId}.${format}`;
+        
+        if (format === 'mp4') {
+            // Video conversion
+            await executeCommand('yt-dlp', [
+                '-f', `best[height<=${videoQuality}]`,
+                '-o', tempPath + '.%(ext)s',
+                url
+            ]);
+            
+            const tempVideoFile = await fs.readdir('temp')
+                .then(files => files.find(f => f.startsWith(uniqueId + '_temp')))
+                .then(file => `temp/${file}`);
+            
+            tempFiles.push(tempVideoFile);
+            
+            // Convert to MP4 with ffmpeg
+            await executeCommand('ffmpeg', [
+                '-i', tempVideoFile,
+                '-c:v', 'libx264',
+                '-c:a', 'aac',
+                '-b:a', `${audioQuality}k`,
+                '-y',
+                outputPath
+            ]);
+        } else {
+            // Audio-only conversion
+            const downloadedFile = await downloadAudio(url, tempPath);
+            tempFiles.push(downloadedFile);
+            
+            const ffmpegArgs = ['-i', downloadedFile];
+            
+            switch (format) {
+                case 'mp3':
+                    ffmpegArgs.push('-acodec', 'libmp3lame', '-b:a', `${audioQuality}k`);
+                    break;
+                case 'wav':
+                    ffmpegArgs.push('-acodec', 'pcm_s16le');
+                    break;
+                case 'flac':
+                    ffmpegArgs.push('-acodec', 'flac');
+                    break;
+                case 'm4a':
+                    ffmpegArgs.push('-acodec', 'aac', '-b:a', `${audioQuality}k`);
+                    break;
+            }
+            
+            // Add metadata
+            if (metadata.title || videoInfo.title) {
+                ffmpegArgs.push('-metadata', `title=${metadata.title || videoInfo.title}`);
+            }
+            if (metadata.artist) {
+                ffmpegArgs.push('-metadata', `artist=${metadata.artist}`);
+            }
+            
+            ffmpegArgs.push('-y', outputPath);
+            
+            await executeCommand('ffmpeg', ffmpegArgs);
+        }
+        
+        // Clean up temporary files
+        await enhancedCleanupFiles(tempFiles);
+        
+        const downloadUrl = `${req.protocol}://${req.get('host')}/downloads/${uniqueId}.${format}`;
+        const processingTime = Date.now() - startTime;
+        
+        // Schedule file cleanup
+        setTimeout(async () => {
+            try {
+                await fs.unlink(outputPath);
+                console.log(`🧹 [${requestId}] Auto-cleaned: ${outputPath}`);
+            } catch (error) {
+                console.error(`❌ [${requestId}] Failed to auto-cleanup ${outputPath}:`, error.message);
+            }
+        }, 60 * 60 * 1000); // 1 hour
+        
+        console.log(`✅ [${requestId}] ${format.toUpperCase()} conversion completed in ${processingTime}ms`);
+        
+        res.json({
+            success: true,
+            requestId,
+            format,
+            videoTitle: videoInfo.title,
+            thumbnailUrl: videoInfo.thumbnail,
+            duration: videoInfo.duration,
+            downloadUrl,
+            audioQuality: format === 'mp4' ? null : audioQuality,
+            videoQuality: format === 'mp4' ? videoQuality : null,
+            processingTime: `${processingTime}ms`
+        });
+        
+    } catch (error) {
+        console.error(`❌ [${requestId}] Format conversion error:`, error);
+        await enhancedCleanupFiles(tempFiles);
+        
+        res.status(500).json({
+            success: false,
+            requestId,
+            error: error.message || 'Format conversion failed',
+            code: 'FORMAT_CONVERSION_ERROR'
+        });
+    }
+});
+
 
 // Cleanup old files every hour
 cron.schedule('0 * * * *', async () => {

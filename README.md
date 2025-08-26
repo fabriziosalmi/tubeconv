@@ -28,24 +28,37 @@ TubeConv supports **over 1000 video platforms** thanks to the powerful [yt-dlp](
 - **Glassmorphic Design**: Beautiful, modern UI with backdrop blur effects
 - **Fully Responsive**: Works seamlessly on desktop, tablet, and mobile
 - **Intuitive UX**: Simple 3-step process with visual guidance
+- **Enhanced Toast Notifications**: Real-time feedback with styled notifications
 
-### 🎵 **High-Quality Audio**
+### 🎵 **Multi-Format Audio & Video**
+- **Multiple Formats**: MP3, WAV, FLAC, MP4, M4A support
 - **Multiple Bitrates**: 128, 192, 256, and 320 kbps options
+- **Video Quality**: 480p, 720p, 1080p for MP4 conversions
 - **Custom Metadata**: Add custom title and artist information
 - **Thumbnail Preview**: See video thumbnail during conversion
-- **Format Support**: High-quality MP3 output with proper encoding
+
+### 🚀 **Batch Processing**
+- **Batch Conversion**: Convert up to 10 videos simultaneously
+- **Playlist Support**: Extract and convert entire playlists
+- **Progress Tracking**: Real-time batch progress with detailed stats
+- **Error Handling**: Detailed success/failure reporting per item
+- **Download Management**: Bulk download all converted files
 
 ### ⚡ **Performance & Reliability**
+- **Request Caching**: Smart caching for improved performance
 - **Real-time Progress**: Live conversion status with animated indicators
 - **Auto-cleanup**: Smart file management with automatic deletion
 - **Fast Processing**: Optimized backend with efficient handling
 - **Background Tasks**: Non-blocking conversion process
+- **Enhanced Security**: Input sanitization and URL validation
 
 ### 🔧 **Developer Features**
 - **RESTful API**: Complete API documentation with Swagger
+- **Enhanced Endpoints**: Batch, playlist, and multi-format APIs
 - **Docker Support**: Containerized deployment ready
 - **CI/CD Pipeline**: Automated testing and deployment
 - **Comprehensive Tests**: Full test coverage for reliability
+- **Performance Monitoring**: Request duration tracking and optimization
 
 ## 🚀 Quick Start
 

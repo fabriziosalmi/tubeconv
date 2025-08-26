@@ -30,15 +30,48 @@ class TubeConvApp {
         this.urlInput = document.getElementById('urlInput');
         this.convertBtn = document.getElementById('convertBtn');
         
-        // Quality settings
+        // Quality and format settings
         this.qualityRadios = document.querySelectorAll('input[name="audioQuality"]');
+        this.formatRadios = document.querySelectorAll('input[name="outputFormat"]');
+        
+        // New buttons
+        this.batchBtn = document.getElementById('batchBtn');
+        this.playlistBtn = document.getElementById('playlistBtn');
         
         // Section elements
         this.inputSection = document.getElementById('inputSection');
         this.previewSection = document.getElementById('previewSection');
         this.loadingSection = document.getElementById('loadingSection');
         this.resultSection = document.getElementById('resultSection');
+        this.batchSection = document.getElementById('batchSection');
+        this.playlistSection = document.getElementById('playlistSection');
+        this.batchResultsSection = document.getElementById('batchResultsSection');
         this.errorSection = document.getElementById('errorSection');
+        
+        // Batch elements
+        this.batchUrls = document.getElementById('batchUrls');
+        this.startBatchBtn = document.getElementById('startBatchBtn');
+        this.cancelBatchBtn = document.getElementById('cancelBatchBtn');
+        this.batchProgress = document.getElementById('batchProgress');
+        this.batchProgressText = document.getElementById('batchProgressText');
+        this.batchSuccessCount = document.getElementById('batchSuccessCount');
+        this.batchFailCount = document.getElementById('batchFailCount');
+        this.batchProgressBarFill = document.getElementById('batchProgressBarFill');
+        
+        // Playlist elements
+        this.playlistName = document.getElementById('playlistName');
+        this.playlistVideoCount = document.getElementById('playlistVideoCount');
+        this.playlistPreview = document.getElementById('playlistPreview');
+        this.convertPlaylistBtn = document.getElementById('convertPlaylistBtn');
+        this.cancelPlaylistBtn = document.getElementById('cancelPlaylistBtn');
+        
+        // Batch results elements
+        this.totalSuccess = document.getElementById('totalSuccess');
+        this.totalFailed = document.getElementById('totalFailed');
+        this.totalProcessed = document.getElementById('totalProcessed');
+        this.batchDownloads = document.getElementById('batchDownloads');
+        this.downloadAllBtn = document.getElementById('downloadAllBtn');
+        this.newBatchBtn = document.getElementById('newBatchBtn');
         
         // Preview elements - DEPRECATED: Direct conversion enabled
         /*
@@ -88,10 +121,50 @@ class TubeConvApp {
         // Convert button
         this.convertBtn.addEventListener('click', () => this.handleConvert());
         
-        // Quality change
+        // Quality and format change
         this.qualityRadios.forEach(radio => {
             radio.addEventListener('change', () => this.saveSettings());
         });
+        
+        this.formatRadios.forEach(radio => {
+            radio.addEventListener('change', () => this.saveSettings());
+        });
+        
+        // New button events
+        if (this.batchBtn) {
+            this.batchBtn.addEventListener('click', () => this.showBatchConversion());
+        }
+        
+        if (this.playlistBtn) {
+            this.playlistBtn.addEventListener('click', () => this.handlePlaylist());
+        }
+        
+        // Batch conversion events
+        if (this.startBatchBtn) {
+            this.startBatchBtn.addEventListener('click', () => this.startBatchConversion());
+        }
+        
+        if (this.cancelBatchBtn) {
+            this.cancelBatchBtn.addEventListener('click', () => this.resetToInput());
+        }
+        
+        // Playlist events
+        if (this.convertPlaylistBtn) {
+            this.convertPlaylistBtn.addEventListener('click', () => this.convertPlaylist());
+        }
+        
+        if (this.cancelPlaylistBtn) {
+            this.cancelPlaylistBtn.addEventListener('click', () => this.resetToInput());
+        }
+        
+        // Batch results events
+        if (this.downloadAllBtn) {
+            this.downloadAllBtn.addEventListener('click', () => this.downloadAllFiles());
+        }
+        
+        if (this.newBatchBtn) {
+            this.newBatchBtn.addEventListener('click', () => this.resetToInput());
+        }
         
         // Preview confirmation - DEPRECATED: Now skipping preview step
         /*
